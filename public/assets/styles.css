@@ -1,0 +1,54 @@
+ body {
+    background-color: rgb(29, 29, 46);
+    /* font-family: "Montserrat Alternates", sans-serif; */
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+h1, h2 {
+    color: rgb(242, 242, 242);
+}
+p {
+    color: rgb(221, 221, 221);
+}
+button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: rgb(86, 111, 173);
+    color: rgb(242, 242, 242);
+    border: none;
+    cursor: pointer;
+}
+input {
+    padding: 10px 10px;
+    border-radius: 5px;
+    background-color: rgb(39, 56, 99);
+    color: rgb(242, 242, 242);
+    border: none;
+    cursor: pointer;
+}
+.montserrat-light {
+    font-family: "Montserrat Alternates", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+}
+.montserrat-regular {
+    font-family: "Montserrat Alternates", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+.montserrat-bold {
+    font-family: "Montserrat Alternates", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.messages {
+    list-style-type: none;
+    margin-top: 20px;
+    padding: 0;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    color: rgb(242, 242, 242);
+}

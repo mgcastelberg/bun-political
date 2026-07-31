@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Sockets Cliente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&family=Montserrat+Alternates:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="./assets/styles.css" rel="stylesheet">
+    <link href="./favicon.ico" rel="icon">
+</head>
+<body>
+    <h1>Web Sockets Cliente</h1>
+    <p id="status">Connecting...</p>
+    
+    <button id="btn-disconnect">Disconnect</button>
+    <button id="btn-connect">Connect</button>
+
+    <form id="form-message" action="" style="display: none;">
+        <h2>Ingrese su mensaje</h2>
+        <input type="text" id="input-message" placeholder="Mensaje">
+        <button id="btn-send">Send</button>
+    </form>
+
+    <ul class="messages">
+
+    </ul>
+
+    <script>
+        // Crear cookies
+        const sesion = {
+            id: 1,
+            ssesionId: "Abc123"
+        }
+
+        const jwtToken = 'MiToken-JWT';
+        document.cookie = `sesion=${JSON.stringify(sesion)}`;
+        document.cookie = `X-Token=${jwtToken}`;
+
+
+        let socket;
+
+        const status = document.getElementById('status');
+        const btnConnect = document.getElementById('btn-connect');
+        const btnDisconnect = document.getElementById('btn-disconnect');
+        const formMessage = document.getElementById('form-message');
+        const inputMessage = document.getElementById('input-message');
+        const btnSend = document.getElementById('btn-send');
+        // console.log({status, btnConnect, btnDisconnect, formMessage, inputMessage, btnSend});
+
+        // Crear nuestros websocket con Handlers
+        const createWebSocket = () => {
+
+            const channelId = "mi-canal";
+            const socket = new WebSocket(`ws://localhost:3200?channelId=${channelId}`);
+
+             // Evento cuando se abre el socket
+            socket.onopen = () => {
+                console.log('Connected');
+                status.textContent = 'Connected';
+                btnConnect.style.display = 'none';
+                btnDisconnect.style.display = 'block';
+                formMessage.style.display = 'block';
+            };
+
+            // Evento cuando se cierra el socket
+            socket.onclose = () => {
+                console.log('Disconnected');
+                status.textContent = 'Disconnected';
+                btnConnect.style.display = 'block';
+                btnDisconnect.style.display = 'none';
+                formMessage.style.display = 'none';
+            };
+
+            socket.onerror = (event) => {
+                console.log({'Error': event});
+                status.textContent = 'Error';
+                btnConnect.style.display = 'block';
+                btnDisconnect.style.display = 'none';
+            };
+
+            // Callback
+            socket.onmessage = (event) => {
+                console.log(event.data);
+                console.log({'Message': event});
+                showMessage(event.data);
+            };
+
+            return socket;
+        }
+        
+        socket = createWebSocket();
+
+        btnDisconnect.addEventListener('click', () => {
+            if(socket.readyState !== WebSocket.OPEN) return;
+            socket.close();
+        });
+
+        btnConnect.addEventListener('click', () => {
+            if(socket.readyState === WebSocket.OPEN) return;
+            socket = createWebSocket();
+        });
+
+
+        formMessage.addEventListener('submit', (event) => {
+            event.preventDefault(); //evitar que refresque el navegador
+            if(inputMessage.value && inputMessage.value.length === 0) return;
+            socket.send(inputMessage.value);
+            // showMessage(inputMessage.value); //SIn pasar por el websocket
+            inputMessage.value = '';
+        });
+
+        const showMessage = (message) => {
+            console.log(message);
+            const li = document.createElement('li');
+            li.textContent = message;
+            // document.body.appendChild(li);
+            const messages = document.querySelector('.messages');
+            messages.appendChild(li);
+        }
+
+    </script>
+</body>
+</html>

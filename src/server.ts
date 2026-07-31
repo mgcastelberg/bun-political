@@ -1,0 +1,49 @@
+import { SERVER_CONFIG } from "./config/server-config";
+import indexHTML from "../public/index.html";
+import { generateUUID } from "./utils/generate-uuid";
+import type { WebSocketData } from "./types";
+
+export const createServer = () => {
+
+    const server = Bun.serve<WebSocketData>({
+
+        port: SERVER_CONFIG.port,
+
+        routes:{
+            "/": indexHTML
+        },
+
+        fetch(req, server) {
+
+            // Identificar nuestros clientes
+            const clientId = generateUUID();
+
+            const upgraded = server.upgrade(req, {
+                data: {
+                    clientId
+                }
+            })
+
+            if (upgraded) {
+                return undefined;
+            }
+
+            return new Response("Upgrade failed", { status: 500 });
+        },
+        websocket: {
+            message(ws, message) {
+                console.log(message);
+            }, // a message is received
+            open(ws) {
+                console.log(`Cliente: ${ ws.data.clientId }`);
+            }, // a socket is opened
+            close(ws, code, message) {
+                console.log(`Cliente Desconectado: ${ ws.data.clientId }`);
+            }, // a socket is closed
+            drain(ws) {}, // the socket is ready to receive more data
+        }, // handlers
+    });
+
+    return server;
+}
+
