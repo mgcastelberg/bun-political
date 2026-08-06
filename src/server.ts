@@ -35,9 +35,27 @@ export const createServer = () => {
             open(ws) {
                 ws.subscribe( SERVER_CONFIG.defaultChannelName );
                 console.log(`Cliente: ${ ws.data.clientId }`);
+                // toDo: emitir el listado actual de los partidos politicos
             }, // a socket is opened
             message(ws, message: string) {
                 const response = handdleMessage(message);
+                const responseString = JSON.stringify(response);
+
+                if(response.type === 'ERROR'){
+                    // mandar el error unicamente a la persona que envio el mensaje
+                    ws.send(responseString);
+                    return;
+                }
+
+                if(response.type === 'PARTIES_LIST'){
+                    // mandar el listado de partidos politicos
+                    ws.send(responseString);
+                    return;
+                }
+
+                ws.send(responseString); // Notificamos al cliente
+                ws.publish( SERVER_CONFIG.defaultChannelName, responseString ); // Notificamos al canal
+
                 console.log(response);
             }, // a message is received
             close(ws, code, message) {
