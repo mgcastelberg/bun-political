@@ -1,3 +1,26 @@
+export interface PoliticalParty {
+    id: string;
+    name: string;
+    color: string;
+    borderColor: string;
+    votes: number;
+}
+
+export interface WebSocketMessage {
+    type: MessageType;
+    payload: unknown;
+}
+
+// ToDO: MessagePayload;
+
+export type MessageType = 
+| 'GET_PARTIES'
+| 'ADD_PARTY'
+| 'UPDATE_PARTY'
+| 'DELETE_PARTY'
+| 'INCREMENT_VOTES'
+| 'DECREMENT_VOTES';
+
 export interface WebSocketResponse {
     type: ResponseType;
     payload?: unknown;

@@ -118,7 +118,8 @@
             li.textContent = message;
             // document.body.appendChild(li);
             const messages = document.querySelector('.messages');
-            messages.appendChild(li);
+            // messages.appendChild(li);
+            messages.prepend(li);
         }
 
     </script>
