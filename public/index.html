@@ -114,8 +114,15 @@
 
         const showMessage = (message) => {
             console.log(message);
+            // const li = document.createElement('li');
+            // li.textContent = JSON.stringify(JSON.parse(message),null,2);
+
+            const pre = document.createElement('pre');
+            pre.innerHTML =JSON.stringify(JSON.parse(message),null,2);
+
             const li = document.createElement('li');
-            li.textContent = message;
+            li.appendChild(pre);
+            
             // document.body.appendChild(li);
             const messages = document.querySelector('.messages');
             // messages.appendChild(li);

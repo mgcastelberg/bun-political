@@ -1,3 +1,4 @@
+import { partyService } from "../services/party.service";
 import type { WebSocketMessage, WebSocketResponse } from "../types";
 
 const createErrorResponse = (error: string): WebSocketResponse => {
@@ -11,44 +12,101 @@ const createErrorResponse = (error: string): WebSocketResponse => {
 const handleGetParties = ():WebSocketResponse => {
     return {
         type: 'PARTIES_LIST',
-        payload: null
+        payload: partyService.getAll()
     }
 };
 
-const handleAddParty = (payload : unknown):WebSocketResponse => {
+const handleAddParty = (payload : any):WebSocketResponse => {
+
+    if( !payload?.name || !payload?.color || !payload?.borderColor ) {
+        return createErrorResponse('name, color or borderColor are required');
+    }
+
+    const newParty = partyService.add(
+        payload.name, 
+        payload.color, 
+        payload.borderColor
+    );
+
     return {
         type: 'PARTY_ADDED',
-        payload: {
-            name: 'Partido 1',
-        }
+        payload: newParty
     }
 };
 
-const handleUpdateParty = (payload : unknown):WebSocketResponse => {
+const handleUpdateParty = (payload : any):WebSocketResponse => {
+
+    if( !payload?.id ) {
+        return createErrorResponse('Party id is required');
+    }
+
+    const updatedParty = partyService.update(payload.id, {
+        name: payload.name,
+        color: payload.color,
+        borderColor: payload.borderColor,
+        votes: payload.votes
+    });
+
+    if( !updatedParty ) {
+        return createErrorResponse(`Party with id ${payload.id} not found`);
+    }
+
     return {
         type: 'PARTY_UPDATED',
-        payload: {}
+        payload: updatedParty
     }
 };
 
-const handleDeleteParty = (payload : unknown):WebSocketResponse => {
+const handleDeleteParty = (payload : any):WebSocketResponse => {
+
+    if( !payload?.id ) {
+        return createErrorResponse(`Party with id ${payload.id} not found`);
+    }
+
+    const deleted = partyService.delete(payload.id);
+
+    if( !deleted ) {
+        return createErrorResponse(`Party with id ${payload.id} not found or cant be deleted`);
+    }
+    
     return {
         type: 'PARTY_DELETED',
-        payload: {}
+        payload: { id: payload.id }
     }
 };
 
-const handleIncrementVotes = (payload : unknown):WebSocketResponse => {
+const handleIncrementVotes = (payload : any):WebSocketResponse => {
+    
+    if( !payload?.id ) {
+        return createErrorResponse(`Party id is required`);
+    }
+
+    const updatedParty = partyService.incrementVotes(payload.id);
+
+    if( !updatedParty ) {
+        return createErrorResponse(`Party with id ${payload.id} not found`);
+    }
+
     return {
         type: 'VOTES_UPDATED',
-        payload: {}
+        payload: updatedParty
     }
 };
 
-const handleDecrementVotes = (payload : unknown):WebSocketResponse => {
+const handleDecrementVotes = (payload : any):WebSocketResponse => {
+    if( !payload?.id ) {
+        return createErrorResponse(`Party id is required`);
+    }
+
+    const updatedParty = partyService.decrementVotes(payload.id);
+
+    if( !updatedParty ) {
+        return createErrorResponse(`Party with id ${payload.id} not found`);
+    }
+
     return {
         type: 'VOTES_UPDATED',
-        payload: {}
+        payload: updatedParty
     }
 };
 
