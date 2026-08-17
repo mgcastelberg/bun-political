@@ -1,3 +1,4 @@
+import { messageSchema } from "../schemas/websocket-message.schema";
 import { partyService } from "../services/party.service";
 import type { WebSocketMessage, WebSocketResponse } from "../types";
 
@@ -115,8 +116,19 @@ export const handdleMessage = (message: string): WebSocketResponse => {
     try {
         const jsonData: WebSocketMessage = JSON.parse(message);
         console.log({payload: jsonData});
+
         // ToDO: validar el objeto JSON
-        const { type, payload } = jsonData;
+        const parseResult = messageSchema.safeParse(jsonData);
+        if (!parseResult.success) {
+            console.log({error: parseResult.error});
+            const errorMessage = parseResult.error.issues
+                .map(issue => issue.message)
+                .join(', ');
+            return createErrorResponse(`Validation error: ${errorMessage}`);
+        }
+
+        // const { type, payload } = jsonData;
+        const { type, payload } = parseResult.data;
 
         switch (type) {
             case 'GET_PARTIES': 
