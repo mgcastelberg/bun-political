@@ -1,4 +1,4 @@
-import { messageSchema } from "../schemas/websocket-message.schema";
+import { messageSchema, type MessageParsed } from "../schemas/websocket-message.schema";
 import { partyService } from "../services/party.service";
 import type { WebSocketMessage, WebSocketResponse } from "../types";
 
@@ -17,7 +17,7 @@ const handleGetParties = ():WebSocketResponse => {
     }
 };
 
-const handleAddParty = (payload : any):WebSocketResponse => {
+const handleAddParty = (payload : MessageParsed['payload']):WebSocketResponse => {
 
     if( !payload?.name || !payload?.color || !payload?.borderColor ) {
         return createErrorResponse('name, color or borderColor are required');
@@ -35,7 +35,7 @@ const handleAddParty = (payload : any):WebSocketResponse => {
     }
 };
 
-const handleUpdateParty = (payload : any):WebSocketResponse => {
+const handleUpdateParty = (payload : MessageParsed['payload']):WebSocketResponse => {
 
     if( !payload?.id ) {
         return createErrorResponse('Party id is required');
@@ -58,10 +58,10 @@ const handleUpdateParty = (payload : any):WebSocketResponse => {
     }
 };
 
-const handleDeleteParty = (payload : any):WebSocketResponse => {
+const handleDeleteParty = (payload : MessageParsed['payload']):WebSocketResponse => {
 
     if( !payload?.id ) {
-        return createErrorResponse(`Party with id ${payload.id} not found`);
+        return createErrorResponse(`Party with id ${payload?.id} not found`);
     }
 
     const deleted = partyService.delete(payload.id);
@@ -76,7 +76,7 @@ const handleDeleteParty = (payload : any):WebSocketResponse => {
     }
 };
 
-const handleIncrementVotes = (payload : any):WebSocketResponse => {
+const handleIncrementVotes = (payload : MessageParsed['payload']):WebSocketResponse => {
     
     if( !payload?.id ) {
         return createErrorResponse(`Party id is required`);
@@ -94,7 +94,7 @@ const handleIncrementVotes = (payload : any):WebSocketResponse => {
     }
 };
 
-const handleDecrementVotes = (payload : any):WebSocketResponse => {
+const handleDecrementVotes = (payload : MessageParsed['payload']):WebSocketResponse => {
     if( !payload?.id ) {
         return createErrorResponse(`Party id is required`);
     }

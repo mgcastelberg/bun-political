@@ -34,3 +34,6 @@ export const messageSchema = z.object({
     payload: payloadSchema.optional()
 });
 
+export type MessageParsed = z.infer<typeof messageSchema>;
+export type MessagePayload = z.infer<typeof payloadSchema>;
+
